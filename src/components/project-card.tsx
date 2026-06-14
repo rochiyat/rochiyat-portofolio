@@ -52,13 +52,15 @@ export function ProjectCard({
         href={href || "#"}
         className={cn("block cursor-pointer", className)}
       >
-        <Image
-          src={image || ""}
-          alt={title}
-          width={500}
-          height={300}
-          className="h-40 w-full overflow-hidden object-cover object-top"
-        />
+        {image && (
+          <Image
+            src={image}
+            alt={title}
+            width={500}
+            height={300}
+            className="h-40 w-full overflow-hidden object-cover object-top"
+          />
+        )}
       </Link>
       <CardHeader className="px-2">
         <div className="space-y-1">

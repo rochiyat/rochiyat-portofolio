@@ -5,7 +5,7 @@ import { apiVersion, dataset, projectId } from "../env";
 export const client = createClient({
   projectId,
   dataset,
-  apiVersion: "vX",
+  apiVersion,
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
   stega: {
     studioUrl:
