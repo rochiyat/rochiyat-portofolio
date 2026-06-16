@@ -1,6 +1,7 @@
 import BlurFade from '@/components/magicui/blur-fade';
 import BlurFadeText from '@/components/magicui/blur-fade-text';
 import { ProjectCard } from '@/components/project-card';
+import { ArticleCard } from '@/components/article-card';
 import { ResumeCard } from '@/components/resume-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ import {
   getEducation,
   getProjects,
   getWorkExperience,
+  getFeaturedArticles,
 } from '@/sanity/lib/queries';
 import { PortableText } from '@portabletext/react';
 import Link from 'next/link';
@@ -20,11 +22,12 @@ export const dynamic = 'force-static';
 export const revalidate = 604800; // 1 week
 
 export default async function Page() {
-  const [author, work, education, projects] = await Promise.all([
+  const [author, work, education, projects, featuredArticles] = await Promise.all([
     getAuthorData(),
     getWorkExperience(),
     getEducation(),
     getProjects(),
+    getFeaturedArticles(),
   ]);
 
   if (!author) return null;
@@ -156,6 +159,7 @@ export default async function Page() {
                 <ProjectCard
                   key={project._id}
                   title={project.title ?? ''}
+                  slug={project.slug?.current ? { current: project.slug.current } : undefined}
                   description={project.description ?? []}
                   tags={project.technologies ?? []}
                   image={project.image?.asset?.url ?? ''}
@@ -166,6 +170,64 @@ export default async function Page() {
               </BlurFade>
             ))}
           </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 13}>
+            <div className="flex justify-center mt-8">
+              <Link
+                href="/projects"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              >
+                View All Projects
+              </Link>
+            </div>
+          </BlurFade>
+        </div>
+      </section>
+      
+      <section id="blog">
+        <div className="space-y-12 w-full py-12">
+          <BlurFade delay={BLUR_FADE_DELAY * 14}>
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
+                  Blog
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Latest Insights
+                </h2>
+                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Thoughts, tutorials, and stories about web development and design.
+                </p>
+              </div>
+            </div>
+          </BlurFade>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-w-[800px] mx-auto">
+            {featuredArticles.map((article, id) => (
+              <BlurFade
+                key={article._id}
+                delay={BLUR_FADE_DELAY * 15 + id * 0.05}
+              >
+                <ArticleCard
+                  title={article.title ?? ""}
+                  href={`/blog/${article.slug?.current ?? ""}`}
+                  excerpt={article.excerpt ?? ""}
+                  image={article.coverImage?.asset?.url ?? undefined}
+                  date={article.publishedAt ?? undefined}
+                  categories={article.categories ?? []}
+                  authorName={article.author?.name ?? undefined}
+                />
+              </BlurFade>
+            ))}
+          </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 16}>
+            <div className="flex justify-center mt-8">
+              <Link
+                href="/blog"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              >
+                View All Posts
+              </Link>
+            </div>
+          </BlurFade>
         </div>
       </section>
       <section id="contact">

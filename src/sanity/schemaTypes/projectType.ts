@@ -58,6 +58,37 @@ export const projectType = defineType({
         },
       ],
     },
+    {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: {
+        source: "title",
+        maxLength: 96,
+      },
+    },
+    {
+      name: "gallery",
+      title: "Image Gallery",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true } }],
+    },
+    {
+      name: "longDescription",
+      title: "Long Description (Case Study)",
+      type: "blockContent",
+    },
+    {
+      name: "demoUrl",
+      title: "Live Demo URL",
+      type: "url",
+    },
+    {
+      name: "featured",
+      title: "Featured",
+      type: "boolean",
+      description: "Show this project on the homepage",
+    },
   ],
   preview: {
     select: {

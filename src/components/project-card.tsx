@@ -11,11 +11,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { TypedObject } from "sanity";
-import { Github, Globe } from "lucide-react";
+import { Github, Globe, Eye } from "lucide-react";
 
 interface Props {
   title: string;
   href?: string;
+  slug?: { current: string };
   description: TypedObject[];
   tags: readonly string[];
   link?: string;
@@ -34,6 +35,7 @@ interface Props {
 export function ProjectCard({
   title,
   href,
+  slug,
   description,
   tags,
   link,
@@ -42,6 +44,9 @@ export function ProjectCard({
   links,
   className,
 }: Props) {
+  // Use slug for internal routing if available, otherwise fallback to href or "#"
+  const targetUrl = slug?.current ? `/projects/${slug.current}` : href || "#";
+
   return (
     <Card
       className={
@@ -49,7 +54,7 @@ export function ProjectCard({
       }
     >
       <Link
-        href={href || "#"}
+        href={targetUrl}
         className={cn("block cursor-pointer", className)}
       >
         {image && (
@@ -89,11 +94,19 @@ export function ProjectCard({
         )}
       </CardContent>
       <CardFooter className="px-2 pb-2">
-        {links && links.length > 0 && (
-          <div className="flex flex-row flex-wrap items-start gap-1">
-            {links?.map((link, idx) => (
+        <div className="flex flex-row flex-wrap items-start gap-1">
+          {slug?.current && (
+            <Link href={targetUrl}>
+              <Badge className="flex gap-2 px-2 py-1 text-[10px]" variant="secondary">
+                <Eye className="size-3" />
+                Details
+              </Badge>
+            </Link>
+          )}
+          {links && links.length > 0 && (
+            links.map((link, idx) => (
               <Link href={link?.url ?? ""} key={idx} target="_blank">
-                <Badge key={idx} className="flex gap-2 px-2 py-1 text-[10px]">
+                <Badge className="flex gap-2 px-2 py-1 text-[10px]">
                   {link.type === "code" ? (
                     <Github className="size-3" />
                   ) : (
@@ -102,9 +115,9 @@ export function ProjectCard({
                   {link.title}
                 </Badge>
               </Link>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

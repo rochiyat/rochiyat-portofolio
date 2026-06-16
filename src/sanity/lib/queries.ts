@@ -88,6 +88,7 @@ export const getProjects = async () => {
     *[_type == "project"] | order(startDate desc) {
       _id,
       title,
+      slug,
       description,
       startDate,
       endDate,
@@ -102,7 +103,8 @@ export const getProjects = async () => {
         title,
         url,
         type
-      }
+      },
+      featured
     }
   `);
 
@@ -111,4 +113,135 @@ export const getProjects = async () => {
   });
 
   return projects.data ?? [];
+};
+
+export const getProjectBySlug = async (slug: string) => {
+  const PROJECT_BY_SLUG_QUERY = defineQuery(`
+    *[_type == "project" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      description,
+      longDescription,
+      startDate,
+      endDate,
+      technologies,
+      image {
+        asset-> {
+          url
+        }
+      },
+      gallery[] {
+        asset-> {
+          url
+        }
+      },
+      video,
+      demoUrl,
+      links[] {
+        title,
+        url,
+        type
+      },
+      featured
+    }
+  `);
+
+  const project = await sanityFetch({
+    query: PROJECT_BY_SLUG_QUERY,
+    params: { slug },
+  });
+
+  return project.data ?? null;
+};
+
+export const getArticles = async () => {
+  const ARTICLES_QUERY = defineQuery(`
+    *[_type == "article"] | order(publishedAt desc) {
+      _id,
+      title,
+      slug,
+      excerpt,
+      coverImage {
+        asset-> {
+          url
+        }
+      },
+      author-> {
+        name
+      },
+      categories,
+      publishedAt,
+      featured
+    }
+  `);
+
+  const articles = await sanityFetch({
+    query: ARTICLES_QUERY,
+  });
+
+  return articles.data ?? [];
+};
+
+export const getFeaturedArticles = async () => {
+  const FEATURED_ARTICLES_QUERY = defineQuery(`
+    *[_type == "article" && featured == true] | order(publishedAt desc)[0...3] {
+      _id,
+      title,
+      slug,
+      excerpt,
+      coverImage {
+        asset-> {
+          url
+        }
+      },
+      author-> {
+        name
+      },
+      categories,
+      publishedAt,
+      featured
+    }
+  `);
+
+  const articles = await sanityFetch({
+    query: FEATURED_ARTICLES_QUERY,
+  });
+
+  return articles.data ?? [];
+};
+
+export const getArticleBySlug = async (slug: string) => {
+  const ARTICLE_BY_SLUG_QUERY = defineQuery(`
+    *[_type == "article" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      excerpt,
+      coverImage {
+        asset-> {
+          url
+        }
+      },
+      content,
+      author-> {
+        name,
+        avatar {
+          asset-> {
+            url
+          }
+        }
+      },
+      categories,
+      publishedAt,
+      featured
+    }
+  `);
+
+  const article = await sanityFetch({
+    query: ARTICLE_BY_SLUG_QUERY,
+    params: { slug },
+  });
+
+  return article.data ?? null;
 };
